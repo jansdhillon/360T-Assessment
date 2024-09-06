@@ -1,23 +1,26 @@
 package com.example.player;
 
 import java.io.IOException;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
-
+import java.util.concurrent.CountDownLatch;
 /**
- * The MainPlayer2 class initializes Initiator and runs it in a separate process.
+ * The MainPlayer1 class initializes Player2 (Initiator) and runs it in a separate process.
  */
 public class MainPlayer2 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int messageLimit = 10;
 
-        CyclicBarrier barrier = new CyclicBarrier(2);
+        int player1Port = 5002;
+        int player2Port = 5001;
 
+        System.out.println("Player1 will use port: " + player1Port);
+        System.out.println("Player2 will use port: " + player2Port);
+
+        CountDownLatch serverReadyLatch = new CountDownLatch(1);
         try {
-            new Player("Initiator", 6667, 6666, messageLimit, barrier).start();
-        } catch (IOException | InterruptedException | ExecutionException | BrokenBarrierException e) {
+            new Player("Initiator", player1Port, player2Port, messageLimit, serverReadyLatch).start();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 }

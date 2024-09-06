@@ -6,38 +6,40 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerServerTest {
 
     private PlayerServer playerServer;
-    private CyclicBarrier barrier;
     private int serverPort;
+    private CountDownLatch serverReadyLatch;
 
     @BeforeEach
     void setUp() throws IOException {
-        barrier = new CyclicBarrier(2);
+        serverReadyLatch = new CountDownLatch(1);
         try (ServerSocket socket = new ServerSocket(0)) {
             serverPort = socket.getLocalPort();
         }
-        playerServer = new PlayerServer("Player1", 10, barrier);
+        playerServer = new PlayerServer("Player1", 10);
     }
 
     private void startServer() {
         Thread serverThread = new Thread(() -> {
             try {
                 playerServer.start(serverPort);
-            } catch (IOException | BrokenBarrierException | InterruptedException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                serverReadyLatch.countDown();
             }
         });
         serverThread.start();
 
         try {
-            Thread.sleep(500);
+            serverReadyLatch.await(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -55,12 +57,10 @@ class PlayerServerTest {
 
         assertDoesNotThrow(() -> {
             Socket clientSocket = new Socket("127.0.0.1", serverPort);
-
             clientSocket.getOutputStream().write("Test Message\n".getBytes());
             clientSocket.getOutputStream().flush();
 
             playerServer.stop();
-
             assertTrue(clientSocket.isConnected());
             clientSocket.close();
         });

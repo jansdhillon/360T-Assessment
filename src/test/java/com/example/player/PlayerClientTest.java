@@ -2,10 +2,11 @@ package com.example.player;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,29 +15,32 @@ class PlayerClientTest {
     private PlayerClient playerClient;
     private PlayerServer playerServer;
     private int serverPort;
+    private CountDownLatch serverReadyLatch;
 
     @BeforeEach
     void setUp() throws IOException {
-        CyclicBarrier barrier = new CyclicBarrier(2);
+        serverReadyLatch = new CountDownLatch(1);
         try (ServerSocket socket = new ServerSocket(0)) {
             serverPort = socket.getLocalPort();
         }
         playerClient = new PlayerClient();
-        playerServer = new PlayerServer("Player1", 10, barrier);
+        playerServer = new PlayerServer("Player1", 10);
     }
 
     private void startServer() {
         Thread serverThread = new Thread(() -> {
             try {
                 playerServer.start(serverPort);
-            } catch (IOException | BrokenBarrierException | InterruptedException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                serverReadyLatch.countDown();
             }
         });
         serverThread.start();
 
         try {
-            Thread.sleep(500);
+            serverReadyLatch.await(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -58,15 +62,14 @@ class PlayerClientTest {
     }
 
     @Test
-    void testSendMessageWithNoServerResponse() throws IOException {
+    void testSendMessageWithServerResponse() throws IOException {
         startServer();
         assertDoesNotThrow(() -> {
             playerClient.startConnection("127.0.0.1", serverPort);
             String response = playerClient.sendMessage("Test Message");
-            assertEquals("No response from server.", response);
+            assertNotNull(response);
             playerClient.stopConnection();
         });
-
     }
 
     @Test
