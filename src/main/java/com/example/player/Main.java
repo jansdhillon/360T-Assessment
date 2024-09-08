@@ -2,6 +2,7 @@ package com.example.player;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+
 /**
  * The Main class initializes two players and runs them in the same process.
  */

@@ -6,7 +6,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerClient {
-    private final AtomicInteger messagesSent = new AtomicInteger(0);;
+    private final AtomicInteger messagesSent = new AtomicInteger(0);
+    ;
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
@@ -19,18 +20,16 @@ public class PlayerClient {
         return this.messagesSent.get();
     }
 
-    // Retry connection until success or timeout
     public void startConnection(String ip, int port) throws IOException {
-        int maxRetries = 5;  // Maximum number of retries
-        int retryDelay = 2000; // Delay between retries (milliseconds)
+        int maxRetries = 10;
+        int retryDelay = 2000;
         boolean connected = false;
 
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 System.out.println("Attempting to connect to server (attempt " + attempt + ")...");
                 clientSocket = new Socket();
-                clientSocket.connect(new InetSocketAddress(ip, port), 5000); // 5-second connection timeout
-                clientSocket.setSoTimeout(5000); // 5-second read timeout
+                clientSocket.connect(new InetSocketAddress(ip, port), 5000);
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 System.out.println("Connection established.");
@@ -41,7 +40,7 @@ public class PlayerClient {
                 if (attempt < maxRetries) {
                     System.out.println("Retrying in " + retryDelay / 1000 + " seconds...");
                     try {
-                        Thread.sleep(retryDelay); // Wait before retrying
+                        Thread.sleep(retryDelay);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         throw new IOException("Retry interrupted", ie);

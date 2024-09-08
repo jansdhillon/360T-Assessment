@@ -1,10 +1,7 @@
 package com.example.player;
 
-import java.io.IOException;
-import java.util.concurrent.CyclicBarrier;
-
 public class MainPlayer2 {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         int serverPort;
         int clientPort;
 
@@ -18,7 +15,6 @@ public class MainPlayer2 {
 
         int messageLimit = 10;
         String name = "Player2";
-
 
 
         try {

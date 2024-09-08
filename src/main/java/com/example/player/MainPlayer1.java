@@ -1,11 +1,10 @@
 package com.example.player;
 
 import java.io.IOException;
-import java.util.concurrent.*;
 
 public class MainPlayer1 {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         int serverPort;
         int clientPort;
 
@@ -24,7 +23,7 @@ public class MainPlayer1 {
 
         try {
             new Player(name, serverPort, clientPort, messageLimit).start();
-        } catch (IOException | InterruptedException  e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             System.out.printf("%s finished.%n", name);
