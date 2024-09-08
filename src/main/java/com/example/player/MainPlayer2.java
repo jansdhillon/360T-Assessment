@@ -1,26 +1,33 @@
 package com.example.player;
 
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-/**
- * The MainPlayer1 class initializes Player2 (Initiator) and runs it in a separate process.
- */
+import java.util.concurrent.CyclicBarrier;
+
 public class MainPlayer2 {
     public static void main(String[] args) throws IOException {
+        int serverPort;
+        int clientPort;
+
+        if (args.length < 2) {
+            serverPort = 6666;
+            clientPort = 6667;
+        } else {
+            serverPort = Integer.parseInt(args[0]);
+            clientPort = Integer.parseInt(args[1]);
+        }
+
         int messageLimit = 10;
+        String name = "Player2";
 
-        int player1Port = 5002;
-        int player2Port = 5001;
 
-        System.out.println("Player1 will use port: " + player1Port);
-        System.out.println("Player2 will use port: " + player2Port);
 
-        CountDownLatch serverReadyLatch = new CountDownLatch(1);
         try {
-            new Player("Initiator", player1Port, player2Port, messageLimit, serverReadyLatch).start();
+            new Player(name, serverPort, clientPort, messageLimit).start();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return;
+        } finally {
+            System.out.printf("%s finished.%n", name);
+            System.exit(0);
         }
     }
-
 }

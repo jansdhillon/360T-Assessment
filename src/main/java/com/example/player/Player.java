@@ -13,29 +13,25 @@ public class Player {
     private final int serverPort;
     private final int clientPort;
     private final int messageLimit;
-    private final CountDownLatch serverReadyLatch;
 
-    public Player(String name, int serverPort, int clientPort, int messageLimit, CountDownLatch serverReadyLatch) {
+    public Player(String name, int serverPort, int clientPort, int messageLimit) {
         this.name = name;
         this.serverPort = serverPort;
         this.clientPort = clientPort;
         this.messageLimit = messageLimit;
-        this.serverReadyLatch = serverReadyLatch;
     }
 
-    public void start() throws IOException, InterruptedException, BrokenBarrierException, TimeoutException {
+
+    public void start() throws IOException, InterruptedException {
         PlayerServer server = new PlayerServer(name, messageLimit);
         Thread serverThread = new Thread(() -> {
             try {
                 server.start(serverPort);
             } catch (IOException e) {
                 System.out.println("Server error: " + e.getMessage());
-            } finally {
-                serverReadyLatch.countDown();
             }
         });
         serverThread.start();
-        serverReadyLatch.await(500, TimeUnit.MILLISECONDS);
 
         PlayerClient client = new PlayerClient();
         try {

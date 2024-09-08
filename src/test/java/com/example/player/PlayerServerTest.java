@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,11 +13,9 @@ class PlayerServerTest {
 
     private PlayerServer playerServer;
     private int serverPort;
-    private CountDownLatch serverReadyLatch;
 
     @BeforeEach
     void setUp() throws IOException {
-        serverReadyLatch = new CountDownLatch(1);
         try (ServerSocket socket = new ServerSocket(0)) {
             serverPort = socket.getLocalPort();
         }
@@ -32,17 +28,10 @@ class PlayerServerTest {
                 playerServer.start(serverPort);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                serverReadyLatch.countDown();
             }
         });
         serverThread.start();
 
-        try {
-            serverReadyLatch.await(500, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     @Test
@@ -53,18 +42,35 @@ class PlayerServerTest {
 
     @Test
     void testServerStartAndStop() {
-        startServer();
+        // Start the server in a separate thread
+        new Thread(this::startServer).start();
+
+        // Wait for a short time to allow the server to start (you can increase this if needed)
+        try {
+            Thread.sleep(500); // wait for 500ms (increase if the server takes longer to start)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         assertDoesNotThrow(() -> {
             Socket clientSocket = new Socket("127.0.0.1", serverPort);
+
+            // Send a message to the server
             clientSocket.getOutputStream().write("Test Message\n".getBytes());
             clientSocket.getOutputStream().flush();
 
+            // Stop the server
             playerServer.stop();
+
+            // Assert that the client is still connected
             assertTrue(clientSocket.isConnected());
+
+            // Close the client socket
             clientSocket.close();
         });
     }
+
+
 
     @Test
     void testIncrementMessagesReceived() {

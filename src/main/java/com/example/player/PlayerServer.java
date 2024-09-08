@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PlayerServer {
     private String name;
     private final int messageLimit;
-    private AtomicInteger messagesReceived = new AtomicInteger(0);
+    private final AtomicInteger messagesReceived = new AtomicInteger(0);
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private PrintWriter out;
@@ -19,9 +19,11 @@ public class PlayerServer {
     }
 
     public void start(int port) throws IOException {
+        System.out.println(name + " server starting on port " + port);
         try {
             serverSocket = new ServerSocket(port);
             clientSocket = serverSocket.accept();
+            System.out.println("Client connected to " + name);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
