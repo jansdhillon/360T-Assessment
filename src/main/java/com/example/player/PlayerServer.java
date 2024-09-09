@@ -19,11 +19,11 @@ public class PlayerServer {
     }
 
     public void start(int port) throws IOException {
-        System.out.println(name + " server starting on port " + port);
+        System.out.println(name + "'s server is starting on port " + port);
         try {
             serverSocket = new ServerSocket(port);
             clientSocket = serverSocket.accept();
-            System.out.println("Client connected to " + name);
+            System.out.println("A client connected to " + name + "'s server");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -39,6 +39,8 @@ public class PlayerServer {
                     break;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         } finally {
             stop();
         }

@@ -13,7 +13,7 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
 
-        player1 = new Player("Player1", 6666, 6667, 10);
+        player1 = new Player("Initiator", 6666, 6667, 10);
         player2 = new Player("Player2", 6667, 6666, 10);
     }
 

@@ -2,7 +2,6 @@ package com.example.player;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.concurrent.*;
 
 /**
  * The Player class represents a player in the communication game.
@@ -55,7 +54,11 @@ public class Player {
         serverThread.join();
         server.stop();
 
-        System.out.println(name + " has received and sent " + server.getMessagesReceived() + " messages.");
+        if (server.getMessagesReceived() == client.getMessagesSent() && server.getMessagesReceived() == messageLimit) {
+            System.out.println(name + " has received and sent " + messageLimit + " messages.");
+        } else {
+            System.out.println("Fail");
+        }
 
 
     }

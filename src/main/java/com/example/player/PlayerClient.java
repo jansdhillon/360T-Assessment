@@ -2,7 +2,6 @@ package com.example.player;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerClient {
@@ -25,6 +24,15 @@ public class PlayerClient {
         int retryDelay = 2000;
         boolean connected = false;
 
+
+        try {
+            //Give the server a second to start
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 System.out.println("Attempting to connect to server (attempt " + attempt + ")...");
@@ -32,7 +40,6 @@ public class PlayerClient {
                 clientSocket.connect(new InetSocketAddress(ip, port), 5000);
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                System.out.println("Connection established.");
                 connected = true;
                 break;
             } catch (IOException e) {

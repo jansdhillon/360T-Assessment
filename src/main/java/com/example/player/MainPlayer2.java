@@ -1,5 +1,7 @@
 package com.example.player;
 
+import java.io.IOException;
+
 public class MainPlayer2 {
     public static void main(String[] args) {
         int serverPort;
@@ -19,10 +21,9 @@ public class MainPlayer2 {
 
         try {
             new Player(name, serverPort, clientPort, messageLimit).start();
-        } catch (Exception e) {
-            return;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         } finally {
-            System.out.printf("%s finished.%n", name);
             System.exit(0);
         }
     }

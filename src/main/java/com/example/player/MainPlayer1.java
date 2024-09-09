@@ -26,7 +26,6 @@ public class MainPlayer1 {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
-            System.out.printf("%s finished.%n", name);
             System.exit(0);
         }
     }

@@ -13,9 +13,6 @@ public class Main {
         int player1Port = getAvailablePort();
         int player2Port = getAvailablePort();
 
-        System.out.println("Initiator will use port: " + player1Port);
-        System.out.println("Player2 will use port: " + player2Port);
-
         Thread t1 = new Thread(() -> {
             try {
                 new Player("Initiator", player1Port, player2Port, messageLimit).start();
