@@ -9,6 +9,13 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * The PlayerClientTest class contains unit tests to validate the behavior of the PlayerClient class.
+ * Responsibilities:
+ * - Tests client-server communication and message sending functionality.
+ * - Verifies that the client increments the message count correctly.
+ * - Ensures the client can establish and stop connections properly.
+ */
 class PlayerClientTest {
 
     private PlayerClient playerClient;

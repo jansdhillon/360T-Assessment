@@ -10,15 +10,23 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+/**
+ * The PlayerServerTest class contains unit tests to validate the behavior of the PlayerServer class.
+ * Responsibilities:
+ * - Tests server initialization and message receipt functionality.
+ * - Validates that the server increments the message count correctly.
+ * - Ensures the server shuts down properly after communication is complete.
+ */
 class PlayerServerTest {
 
     private PlayerServer playerServer;
     private int serverPort;
-
+    private CountDownLatch serverReadyLatch;
 
     @BeforeEach
     void setUp() throws IOException {
-        CountDownLatch serverReadyLatch = new CountDownLatch(1);
+        serverReadyLatch = new CountDownLatch(1);
         try (ServerSocket socket = new ServerSocket(0)) {
             serverPort = socket.getLocalPort();
         }
@@ -34,7 +42,6 @@ class PlayerServerTest {
             }
         });
         serverThread.start();
-
     }
 
     @Test
@@ -44,14 +51,10 @@ class PlayerServerTest {
     }
 
     @Test
-    void testServerStartAndStop() {
-        new Thread(this::startServer).start();
+    void testServerStartAndStop() throws InterruptedException {
+        startServer();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        serverReadyLatch.await();
 
         assertDoesNotThrow(() -> {
             Socket clientSocket = new Socket("127.0.0.1", serverPort);

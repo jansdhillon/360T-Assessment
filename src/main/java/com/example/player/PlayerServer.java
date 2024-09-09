@@ -8,11 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * The PlayerServer class manages the server-side communication for a player.
  * Responsibilities:
- * - Listens for connections from the client.
+ * - Manages the server-side communication for a player.
+ * - Listens for incoming connections from the client.
  * - Receives messages and sends responses with a message counter.
- * - Tracks the number of messages received.
- * - Signals readiness to accept connections and ensures synchronization.
- * - Gracefully shuts down the server and closes connections after communication is complete.
+ * - Tracks the number of messages received using an atomic counter.
+ * - Signals when the server is ready to accept connections (synchronization).
+ * - Closes connections and resources gracefully after communication is complete.
  */
 public class PlayerServer {
     private String name;
@@ -35,8 +36,8 @@ public class PlayerServer {
 
 
         try {
-            // Wait for a second for the server to start before client attempts to connect
-            Thread.sleep(1000);
+            // Wait for a second or so for the server to start before client attempts to connect
+            Thread.sleep(2000);
             serverSocket = new ServerSocket(port);
             serverReadyLatch.countDown();
             clientSocket = serverSocket.accept();

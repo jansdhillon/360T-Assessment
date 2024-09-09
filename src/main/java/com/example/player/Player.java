@@ -7,11 +7,12 @@ import java.util.concurrent.CountDownLatch;
 /**
  * The Player class represents a player in the message exchange game, acting as both a client and a server.
  * Responsibilities:
- * - Initializes a PlayerServer and PlayerClient to handle message sending and receiving.
- * - Ensures proper synchronization between server and client startup.
- * - Handles the communication loop, sending messages and receiving responses.
- * - Gracefully stops the server and client after communication is complete.
- * - Ensures the correct number of messages is exchanged before termination.
+ * - Represents a player in the message exchange game.
+ * - Acts as both a client and a server by initializing PlayerServer and PlayerClient.
+ * - Synchronizes the client and server startup.
+ * - Sends and receives messages in a communication loop.
+ * - Gracefully stops the server and client after the message exchange is complete.
+ * - Verifies that the correct number of messages has been exchanged before terminating.
  */
 public class Player {
     private final String name;
@@ -48,7 +49,7 @@ public class Player {
             String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
             System.out.println(name + "'s PID: " + pid);
 
-            for (int i = 0; i < messageLimit; i++) {
+            for (int i = 1; i < messageLimit + 1; i++) {
                 String message = "Hello " + i + " from " + name + "'s client!";
                 String response = client.sendMessage(message);
                 System.out.println(name + " sent: '" + message + "'.\nResponse: '" + response + "'");
@@ -72,7 +73,9 @@ public class Player {
         }
 
         if (server.getMessagesReceived() == client.getMessagesSent() && server.getMessagesReceived() == messageLimit) {
-            System.out.println(name + " has received and sent " + messageLimit + " messages.");
+           if ("Initiator".equals(name)) {
+               System.out.printf("\n%s has received and sent %d messages!\n", name, messageLimit);
+           }
         } else {
             System.out.println("Error: Expected " + messageLimit + " messages, but received " + server.getMessagesReceived() + " and sent " + client.getMessagesSent() + ".");
             throw new IllegalStateException("Message exchange did not meet the expected message limit.");

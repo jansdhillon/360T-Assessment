@@ -5,9 +5,10 @@ import java.io.IOException;
 /**
  * The MainPlayer1 class initializes the Initiator player in a separate process.
  * Responsibilities:
- * - Starts the Initiator player with predefined or command-line ports.
- * - Manages message exchange between Initiator and Player2.
- * - Ensures the player terminates gracefully after completing communication.
+ * - Initializes the Initiator player in a separate process.
+ * - Uses predefined or command-line-specified ports for communication.
+ * - Manages the message exchange between Initiator and Player2.
+ * - Terminates the process gracefully after the message limit is reached.
  */
 public class MainPlayer1 {
 
