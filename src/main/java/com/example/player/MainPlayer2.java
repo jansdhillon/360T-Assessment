@@ -2,6 +2,13 @@ package com.example.player;
 
 import java.io.IOException;
 
+/**
+ * The MainPlayer2 class initializes Player2 in a separate process.
+ * Responsibilities:
+ * - Starts Player2 with predefined or command-line ports.
+ * - Manages message exchange between Player2 and Initiator.
+ * - Ensures Player2 terminates gracefully after completing communication.
+ */
 public class MainPlayer2 {
     public static void main(String[] args) {
         int serverPort;
@@ -17,7 +24,6 @@ public class MainPlayer2 {
 
         int messageLimit = 10;
         String name = "Player2";
-
 
         try {
             new Player(name, serverPort, clientPort, messageLimit).start();

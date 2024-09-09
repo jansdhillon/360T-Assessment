@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,11 +17,12 @@ class PlayerClientTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        CountDownLatch serverReadyLatch = new CountDownLatch(1);
         try (ServerSocket socket = new ServerSocket(0)) {
             serverPort = socket.getLocalPort();
         }
         playerClient = new PlayerClient();
-        playerServer = new PlayerServer("Initiator", 10);
+        playerServer = new PlayerServer("Initiator", 10, serverReadyLatch);
     }
 
     private void startServer() {
@@ -51,7 +53,7 @@ class PlayerClientTest {
     }
 
     @Test
-    void testSendMessageWithServerResponse() throws IOException {
+    void testSendMessageWithServerResponse() {
         startServer();
         assertDoesNotThrow(() -> {
             playerClient.startConnection("127.0.0.1", serverPort);

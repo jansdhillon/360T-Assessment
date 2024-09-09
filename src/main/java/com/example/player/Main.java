@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 /**
- * The Main class initializes two players and runs them in the same process.
+ * The Main class initializes two players (Initiator and Player2) and runs them in the same process.
+ * Responsibilities:
+ * - Initializes and runs both players in separate threads.
+ * - Dynamically allocates ports for the players.
+ * - Waits for both players to complete the communication before exiting.
+ * - Ensures the program terminates after the required number of messages have been sent and received.
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {

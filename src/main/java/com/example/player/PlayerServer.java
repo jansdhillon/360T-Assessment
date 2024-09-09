@@ -2,8 +2,18 @@ package com.example.player;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The PlayerServer class manages the server-side communication for a player.
+ * Responsibilities:
+ * - Listens for connections from the client.
+ * - Receives messages and sends responses with a message counter.
+ * - Tracks the number of messages received.
+ * - Signals readiness to accept connections and ensures synchronization.
+ * - Gracefully shuts down the server and closes connections after communication is complete.
+ */
 public class PlayerServer {
     private String name;
     private final int messageLimit;
@@ -12,16 +22,23 @@ public class PlayerServer {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private final CountDownLatch serverReadyLatch;
 
-    public PlayerServer(String name, int messageLimit) {
+    public PlayerServer(String name, int messageLimit, CountDownLatch serverReadyLatch) {
         this.name = name;
         this.messageLimit = messageLimit;
+        this.serverReadyLatch = serverReadyLatch;
     }
 
     public void start(int port) throws IOException {
         System.out.println(name + "'s server is starting on port " + port);
+
+
         try {
+            // Wait for a second for the server to start before client attempts to connect
+            Thread.sleep(1000);
             serverSocket = new ServerSocket(port);
+            serverReadyLatch.countDown();
             clientSocket = serverSocket.accept();
             System.out.println("A client connected to " + name + "'s server");
             out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -39,8 +56,8 @@ public class PlayerServer {
                     break;
                 }
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error during communication: " + e.getMessage());
         } finally {
             stop();
         }

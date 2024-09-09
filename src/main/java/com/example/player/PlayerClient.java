@@ -4,9 +4,16 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The PlayerClient class manages the client-side communication for a player.
+ * Responsibilities:
+ * - Establishes a connection to the server and retries if necessary.
+ * - Sends messages to the server and receives responses.
+ * - Tracks the number of messages sent.
+ * - Gracefully closes connections and streams after communication is done.
+ */
 public class PlayerClient {
     private final AtomicInteger messagesSent = new AtomicInteger(0);
-    ;
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
@@ -23,15 +30,6 @@ public class PlayerClient {
         int maxRetries = 10;
         int retryDelay = 2000;
         boolean connected = false;
-
-
-        try {
-            //Give the server a second to start
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
